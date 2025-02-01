@@ -39,7 +39,7 @@ class TextDataset(Dataset):
         else:
             return self.fn(row["prefix"]), ""
 class Strategy(SaveMixin):
-    def __init__(self, model, tokenizer, max_new_tokens,dataset_file, column_name,device,accelerator,output_dir="./",name="",verbose=False):
+    def __init__(self, model, tokenizer, max_new_tokens,dataset_file, column_name,device,accelerator,output_dir="./",name="",verbose=False,limit=100):
         super().__init__(output_dir=output_dir,name=name,action_type="generate")
         model.resize_token_embeddings(len(tokenizer))
         self.accelerator=accelerator
@@ -51,7 +51,7 @@ class Strategy(SaveMixin):
         self.device= device
         self.verbose=verbose
         print(f"output file path:{self.filename}")
-        self.dataset = TextDataset(self.dataset_file, self.column_name,lambda x:x)
+        self.dataset = TextDataset(self.dataset_file, self.column_name,lambda x:x,limit=limit)
 
 
     def load_dataset(self):
@@ -161,8 +161,9 @@ class GumbelStrategy(Strategy):
                  max_new_tokens,
                  output_dir="./",
                  name="",
+                 limit=100
                  ):
-        super().__init__(model, tokenizer,max_new_tokens, dataset_file, column_name, device, accelerator, output_dir, name, verbose=False)
+        super().__init__(model, tokenizer,max_new_tokens, dataset_file, column_name, device, accelerator, output_dir, name, verbose=False,limit=limit)
         self.key=key
         self.ngram = ngram
         self.model =  GumbelSoftGeneratorNg(model=model, tokenizer=tokenizer, hash_key=self.key, ngram=self.ngram)
@@ -199,8 +200,9 @@ class RedGreenStrategy(Strategy):
                  batch_size,
                  output_dir="./",
                  name="",
+                 limit=100
                  ):
-        super().__init__(model, tokenizer,max_new_tokens, dataset_file, column_name, device, accelerator, output_dir, name, verbose=False)
+        super().__init__(model, tokenizer,max_new_tokens, dataset_file, column_name, device, accelerator, output_dir, name, verbose=False,limit=limit)
         vocab = list(tokenizer.get_vocab().values())
         self.gamma= gamma
         self.delta=delta
@@ -255,8 +257,9 @@ class NoWaterMarkStrategy(Strategy):
                  max_new_tokens,
                  output_dir="./",
                  name="",
+                 limit=100
                  ):
-        super().__init__(model, tokenizer,max_new_tokens, dataset_file, column_name, device, accelerator, output_dir, name, verbose=False)
+        super().__init__(model, tokenizer,max_new_tokens, dataset_file, column_name, device, accelerator, output_dir, name, verbose=False,limit=limit)
 
     def custom_parameters(self):
         return {
@@ -321,7 +324,8 @@ def run(args):
                             args.max_new_tokens,
                             batch_size,
                             args.output_dir,
-                            args.name)
+                            args.name,
+                            limit=args.limit)
     elif args.method=="gumbel":
         s = GumbelStrategy(base_model
                         ,tokenizer,
@@ -333,7 +337,8 @@ def run(args):
                             5,
                             args.max_new_tokens,
                             args.output_dir,
-                            args.name)
+                            args.name,
+                            limit=args.limit)
     elif args.method=="no_watermarking":
         s = NoWaterMarkStrategy(base_model
                             ,tokenizer,
@@ -343,7 +348,8 @@ def run(args):
                             accelerator,
                             args.max_new_tokens,
                             args.output_dir,
-                            args.name)
+                            args.name,
+                            limit=args.limit)
     else:
         raise ValueError(f"Invalid method: {args.method}")
     s.execute(batch_size=batch_size)
