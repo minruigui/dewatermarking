@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=64.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dewatermarking"
+version = "0.1.0"
+description = "A project for removing watermarks from AI-generated text"
+authors = [
+    {name = "minrui gui"},
+]
+requires-python = ">=3.12"
+dependencies = [
+    "torch>=2.4.0",
+    "transformers>=4.43.3",
+    "sentence-transformers>=3.1.1",
+    "minio",
+    "numpy>=1.26.0",
+    "pandas>=2.2.2",
+    "tqdm>=4.66.5",
+    "scikit-learn>=1.5.2",
+    "peft>=0.12.0",
+    "accelerate>=1.0.1",
+    "datasets>=3.0.0",
+    "nltk>=3.9.1",
+    "scipy>=1.14.1",
+    "tokenizers>=0.19.1",
+    "evaluate",
+    "sacremoses",
+    "spacy",
+    "h5py",
+    "sentencepiece",
+    "safetensors>=0.4.5",
+    "einops>=0.8.0",
+    "pillow>=10.4.0",
+    "protobuf>=5.28.1",
+    "regex>=2024.7.24",
+    "filelock>=3.16.0",
+    "huggingface-hub>=0.24.6"
+]
+
+[tool.setuptools]
+packages = ["dewatermarking"]
