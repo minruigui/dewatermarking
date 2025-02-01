@@ -24,12 +24,11 @@ dewatermarking/
 └── pyproject.toml      # Project dependencies and metadata
 ```
 
-## Installation
+## Quick Start
 
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd dewatermarking
 ```
 
 2. Install the package and its dependencies:
@@ -37,68 +36,11 @@ cd dewatermarking
 pip install -e .
 ```
 
-## Requirements
-
-The project requires Python >=3.12 and the following main dependencies:
-- torch
-- transformers
-- sentence-transformers
-- numpy
-- pandas
-- scikit-learn
-- peft
-- tqdm
-- minio
-
-All dependencies are listed in `pyproject.toml`.
-
-## Usage
-
-The package provides several modules for different aspects of watermark analysis:
-
-### Detection
-```python
-from dewatermarking.detect import detect_watermark
-
-# Detect watermarks in text
-results = detect_watermark(text, model="your-model-name")
+3. Run the pipeline:
+```bash
+cd experiments
+python main.py
 ```
-
-### Evaluation
-```python
-from dewatermarking.evaluate import evaluate_watermark
-
-# Evaluate watermark effectiveness
-metrics = evaluate_watermark(original_text, modified_text)
-```
-
-### Text Generation
-```python
-from dewatermarking.generate import main
-
-# Generate watermarked text
-watermarked_text = main(prompt, watermark_params={})
-```
-
-### Rephrasing
-```python
-from dewatermarking.rephrase import rephrase_text
-
-# Rephrase text while attempting to preserve meaning
-rephrased_text = rephrase_text(original_text)
-```
-
-## Experiments
-
-The `experiments/` directory contains various scripts and notebooks for running experiments:
-- Watermark detection analysis
-- Rephrasing effectiveness studies
-- Generation parameter optimization
-- Evaluation metrics computation
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
