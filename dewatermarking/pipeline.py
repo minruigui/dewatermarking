@@ -81,7 +81,7 @@ def embedding_similarity_step(path,name,persist_checkpoint):
     persist_checkpoint.set_stats("similarity "+name,stats)
     persist_checkpoint.history("similarity "+name,stats)
 
-def generate_step(dataset_file,output_dir,name,method,persist_checkpoint):
+def generate_step(dataset_file,output_dir,name,method,persist_checkpoint,limit=100):
     if not persist_checkpoint.is_in_history(name):
         print(f"Generating {name} {method}")
         generate_args = argparse.Namespace(**{
@@ -92,7 +92,8 @@ def generate_step(dataset_file,output_dir,name,method,persist_checkpoint):
             "max_new_tokens": 300,
             "output_dir": f"{output_dir}/generate",
             "name": name,
-            "method": method
+            "method": method,
+            "limit": limit
         })
         result_dataset_file = generate.run(generate_args)
         persist_checkpoint.history(name,result_dataset_file)
@@ -103,7 +104,7 @@ def generate_step(dataset_file,output_dir,name,method,persist_checkpoint):
     rephrased_step(result_dataset_file,output_dir,"rephrase_gumbel_"+name,"gumbel",persist_checkpoint)
     rephrased_step(result_dataset_file,output_dir,"rephrase_red_green_"+name,"red_green",persist_checkpoint)
     rephrased_step(result_dataset_file,output_dir,"rephrase_no_watermarking_"+name,"no_watermarking",persist_checkpoint)
-def run(dataset_files,output_dir,start_from_checkpoint=None):
+def run(dataset_files,output_dir,start_from_checkpoint=None,limit=100):
     if start_from_checkpoint is not None and os.path.exists(start_from_checkpoint):
         checkpoint = json.load(open(start_from_checkpoint))
     else:
@@ -113,8 +114,8 @@ def run(dataset_files,output_dir,start_from_checkpoint=None):
     persist_checkpoint = PersistCheckpoint(start_from_checkpoint,checkpoint)
     for name,dataset_file in dataset_files:
         torch.cuda.empty_cache()
-        generate_step(dataset_file,output_dir,f"{name}_gumbel","gumbel",persist_checkpoint)
+        generate_step(dataset_file,output_dir,f"{name}_gumbel","gumbel",persist_checkpoint,limit=limit)
         torch.cuda.empty_cache()
-        generate_step(dataset_file,output_dir,f"{name}_red_green","red_green",persist_checkpoint)
+        generate_step(dataset_file,output_dir,f"{name}_red_green","red_green",persist_checkpoint,limit=limit)
 
 
